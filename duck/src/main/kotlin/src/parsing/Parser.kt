@@ -1,53 +1,70 @@
 package src.parsing
 
 import src.Expr
-import src.Field
+import src.PrettyElement
 import src.Operator
-import src.Value
 
 
 class Parser(val tokens: ArrayList<Token>) {
     private var index = 0
 
     private fun peek(n: Int = 0): Token {
-        return tokens.getOrElse(index + n){ Token.EOF }
+        return tokens.getOrElse(index + n) { Token.EOF }
     }
 
     private fun next(n: Int = 1): Token {
-        val t = tokens.getOrElse(index){ Token.EOF }
+        val t = tokens.getOrElse(index) { Token.EOF }
         index += n
         return t
     }
 
-    fun parse(): Field.Block{
-        when(val t = next()) {
+    fun parse(): PrettyElement.Block {
+        when (val t = next()) {
             is Token.CURLLEFT -> return parseBlock()
             else -> throw Exception("Unexpected token: $t")
         }
     }
 
-    fun parseField(): Field{
+    fun parseField(): PrettyElement {
         if (peek() == Token.CURLLEFT) return parseBlock()
         val result = parseExpr()
-        if (result is Expr.Lambda) throw Exception("Fields shouldn't just consist of lambdas like this: \n$result" )
-        return Field.Monofield(result)
+        return PrettyElement.Field(result)
     }
 
-    fun parseBlock(): Field.Block {
-        val result = hashMapOf<String,Field>()
+    fun parseBlock(): PrettyElement.Block {
+        val result = hashMapOf<String, PrettyElement>()
+        val bindings = mutableListOf<Pair<String, PrettyElement>>()
         expectNext<Token.CURLLEFT>("{")
-        while (peek() != Token.CURLRIGHT){
-            val i = expectNext<Token.FIELDIDENT>("Field Identifier").ident
-
-            val value = parseField()
-            result[i] = value
+        while (peek() != Token.CURLRIGHT) {
+            when (peek()) {
+                is Token.FIELDIDENT -> {
+                    val i = expectNext<Token.FIELDIDENT>("Field Identifier").ident
+                    val value = parseField()
+                    if (value is PrettyElement.Field && value.value is Expr.Lambda)
+                        throw Exception("Fields shouldn't just consist of lambdas like this: \n$result")
+                    result.put(i, value)
+                }
+                is Token.LET -> {
+                    expectNext<Token.LET>("let")
+                    val binder = expectNext<Token.IDENT>("binder").ident
+                    expectNext<Token.EQUALS>("equals")
+                    val value = parseField()
+                    bindings.add(Pair(binder, value))
+                }
+                else -> throw Exception("Expected let or Identifier")
+            }
         }
+
         expectNext<Token.CURLRIGHT>("}")
-        return Field.Block(result)
+        return PrettyElement.Block(bindings, result)
+    }
+
+    fun parsePrettyLet(): PrettyElement {
+        TODO()
     }
 
     fun parseExpr(): Expr {
-        return when{
+        return when {
             peek() is Token.Str -> Expr.Str((next() as Token.Str).s)
             else -> parseBinary(0)
         }
@@ -80,7 +97,7 @@ class Parser(val tokens: ArrayList<Token>) {
      */
 
     private fun parseOperator(): Operator? {
-        return when(peek()) {
+        return when (peek()) {
             Token.PLUS -> Operator.Plus
             Token.MINUS -> Operator.Minus
             Token.MUL -> Operator.Multiply
@@ -90,7 +107,7 @@ class Parser(val tokens: ArrayList<Token>) {
     }
 
     fun bindingPower(op: Operator): Pair<Int, Int> {
-        return when(op) {
+        return when (op) {
             Operator.Equals -> 1 to 2
             Operator.Plus, Operator.Minus -> 3 to 4
             Operator.Multiply -> 5 to 6
@@ -114,7 +131,7 @@ class Parser(val tokens: ArrayList<Token>) {
         return when (val t = peek()) {
             is Token.BOOLEAN_LIT -> parseBoolean()
             is Token.NUMBER_LIT -> parseNumber()
-            is Token.IDENT ->  parseVar()
+            is Token.IDENT -> parseVar()
             is Token.IF -> parseIf()
             is Token.BACKSLASH -> parseLambda()
             is Token.LPAREN -> parseParenthesized()
@@ -175,7 +192,7 @@ class Parser(val tokens: ArrayList<Token>) {
         return Expr.If(condition, thenBranch, elseBranch)
     }
 
-    private inline fun <reified A>expectNext(msg: String): A {
+    private inline fun <reified A> expectNext(msg: String): A {
         val next = next()
         if (next !is A) {
             throw Exception("Unexpected token: expected $msg, but saw $next")

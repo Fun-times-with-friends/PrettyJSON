@@ -1,9 +1,14 @@
 package src
 
+import kotlinx.collections.immutable.persistentHashMapOf
 
-sealed class Field{ // todo rename
-    data class Monofield(val value: Expr): Field()
-    data class Block(val properties: HashMap<String, Field>) : Field()
+
+sealed class PrettyElement{
+    data class Field(val value: Expr): PrettyElement()
+    data class Block(
+        val bindings: List<Pair<String, PrettyElement>>,
+        val properties: HashMap<String, PrettyElement>
+    ) : PrettyElement()
 }
 
 sealed class Expr {

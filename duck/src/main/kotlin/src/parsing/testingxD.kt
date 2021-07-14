@@ -30,6 +30,24 @@ fun testBlock(input: String) {
 
 
 }
+
+fun testExistingBlock(){
+    val b = PrettyElement.Block(
+        listOf(
+            "a" to PrettyElement.Field( Expr.Number(5)),
+        ),
+        hashMapOf(
+            "foo" to PrettyElement.Block(
+                listOf(),
+                hashMapOf("bar" to PrettyElement.Field(Expr.Var("a")))
+            ),
+        )
+    )
+    val result = evalBlock(persistentHashMapOf(), b)
+    println(result)
+
+}
+
 // todo LEXER, check for fieldname
 //
 fun main(){
@@ -46,19 +64,34 @@ fun main(){
 
 
     // let bindings
+    // todo our letbindings bites with the normal lets
+    // todo check lamda in evaluator?
     val funTest = """
-        let blockValue = { 
-            color: "red" 
+        {  
+        # This is a comment
+        #* mutliline???
+        yeet *#
+            let fib = \n => 
+                if n == 0 then 1 
+                else if n == 1 then 1 
+                else fib (n - 1) + fib (n - 2) 
+            lol: (fib) 5
         }
-        
-        let fieldValue = "red"
-        
-        { 
-            foo: blockValue
-            bar: fieldValue
-        }
-        
     """.trimIndent()
-    testBlock(simpleTest)
+    // testBlock(simpleTest)
+    // testExistingBlock()
+    testBlock(funTest)
+    /*
+    let a = { foo: "bar" }
+    let a = 10 | "bar" | true
+    keyword binder equals, Block | Expr
+    testEval(
+        """
+
+        """.trimIndent()
+    )
+
+
+     */
 
 }

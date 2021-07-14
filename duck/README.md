@@ -53,6 +53,15 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
 
 ![duckdance.gif](https://cdn.discordapp.com/emojis/853294931472941136.gif?v=1)
 
+# Problem Let bindings unterschiedlich
+
+- ~~Werten Blocks und fields als Expr~~
+    - funkt wahrscheinlich nicht
+    - geht außerdem gegen Struktur
+- entfernen let aus expression  
+- anderes keyword
+- fucky magic aka Monster let expression die sowohl Pretty shit als auch Lambda shit kann
+
 | Probleme                       | Lösungen                                                     |
 | ------------------------------ | ------------------------------------------------------------ |
 | Keine leeren Lambas in Feldern | Parser angepasst, erkennt jetzt bei parseField ob es ein Lambda ist. |

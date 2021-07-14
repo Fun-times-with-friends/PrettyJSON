@@ -7,7 +7,7 @@ class Lexer(input: String) {
 
     fun lexTokens(): ArrayList<Token> {
         val tokens = arrayListOf<Token>()
-        while(iter.hasNext())
+        while (iter.hasNext())
             tokens.add(next())
         return tokens
     }
@@ -54,7 +54,7 @@ class Lexer(input: String) {
         return token
     }
 
-    fun string(): Token{
+    fun string(): Token {
         var result = ""
         while (iter.hasNext() && iter.peek() != '"') {
             result += iter.next()
@@ -62,6 +62,7 @@ class Lexer(input: String) {
         iter.next()
         return Token.Str(result)
     }
+
     private fun number(c: Char): Token {
         var result = c.toString()
         while (iter.hasNext() && iter.peek().isDigit()) {
@@ -75,7 +76,7 @@ class Lexer(input: String) {
         while (iter.hasNext() && iter.peek().isJavaIdentifierPart()) {
             result += iter.next()
         }
-        if (iter.peek() == ':'){
+        if (iter.peek() == ':') {
             iter.next()
             return Token.FIELDIDENT(result)
 
@@ -96,8 +97,41 @@ class Lexer(input: String) {
     private fun consumeWhitespace() {
         while (iter.hasNext()) {
             val c = iter.peek()
+            if (c == '#') consumeComment()
             if (!c.isWhitespace()) break
             iter.next()
         }
+    }
+
+    private fun consumeComment() {
+        var res = ""
+        val c = iter.peek()
+        if (c == '#') {
+            iter.next()
+            if (iter.peek() == '*') {
+                var end = false
+                do {
+                    when (iter.peek()) {
+                        '*' -> {
+                            iter.next()
+                            if (iter.peek() == '#') {
+                                end = true
+                            }
+                            iter.next()
+                        }
+                        else -> res += iter.next()
+                    }
+                } while (iter.hasNext() && !end)
+            } else {
+                while (iter.hasNext()) {
+                    val charHerexD = iter.peek()
+                    if (charHerexD == '\n') break
+                    res += charHerexD
+                    iter.next()
+                }
+            }
+        }
+        println("Omitted comment : $res")
+        consumeWhitespace()
     }
 }

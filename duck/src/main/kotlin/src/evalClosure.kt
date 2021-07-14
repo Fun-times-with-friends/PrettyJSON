@@ -36,19 +36,30 @@ sealed class Value {
     }
 }
 
-fun evalBlock(env: Env, block: Field.Block): Value.JsonBlock {
+fun evalElement(env: Env, element: PrettyElement): Value{
+    return when(element){
+        is PrettyElement.Block -> evalBlock(env,element)
+        is PrettyElement.Field -> evalField(env,element)
+        else -> throw Exception("Nope")
+    }
+}
+
+
+fun evalBlock(pEnv: Env, block: PrettyElement.Block): Value.JsonBlock {
+    var env = pEnv
     val b = Value.JsonBlock(hashMapOf())
+    for (p in block.bindings) {
+        env = env.put(p.first, evalElement(env, p.second))
+    }
+
     for (p in block.properties) {
-        b.properties[p.key] = when (val v = p.value){
-            is Field.Block      -> evalBlock(env, v)
-            is Field.Monofield  ->  evalMonoField(env, v)
-        }
+        b.properties.put(p.key, evalElement(env, p.value))
     }
     return b
 }
 
-fun evalMonoField(env: Env, monoField: Field.Monofield): Value =
-     eval(env, monoField.value)
+fun evalField(env: Env, field: PrettyElement.Field): Value =
+     eval(env, field.value)
 
 fun eval(env: Env, expr: Expr): Value {
     return when (expr) {
@@ -67,7 +78,7 @@ fun eval(env: Env, expr: Expr): Value {
             val evaledArg = eval(env, expr.arg)
             when (evaledFunc) {
                 is Value.Closure -> {
-                    val newEnv = evaledFunc.env.put(evaledFunc.binder, evaledArg)
+                    val newEnv = env.put(evaledFunc.binder, evaledArg)
                     eval(newEnv, evaledFunc.body)
                 }
                 else -> throw Exception("$evaledFunc is not a function")
