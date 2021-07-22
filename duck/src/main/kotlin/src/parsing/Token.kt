@@ -24,9 +24,11 @@ sealed class Token {
 
 
     //
-    object DELIMITER: Token()
+    object Comma: Token()
     object CURLLEFT: Token()
     object CURLRIGHT: Token()
+    object BRACKLEFT: Token()
+    object BRACKRIGHT: Token()
     /*
     fun yada(yada:String):JSONField {}
     MONOField = Number, String

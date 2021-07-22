@@ -22,6 +22,9 @@ sealed class Value {
             return s
         }
     }
+    data class Array(val a: List<Value>): Value(){
+        override fun toString(): String = "[ ${a.joinToString(", ")} ]"
+    }
     data class Number(val n: Int) : Value(){
         override fun toString(): String = n.toString()
     }
@@ -40,10 +43,10 @@ fun evalElement(env: Env, element: PrettyElement): Value{
     return when(element){
         is PrettyElement.Block -> evalBlock(env,element)
         is PrettyElement.Field -> evalField(env,element)
+        is PrettyElement.Array -> evalArray(env,element)
         else -> throw Exception("Nope")
     }
 }
-
 
 fun evalBlock(pEnv: Env, block: PrettyElement.Block): Value.JsonBlock {
     var env = pEnv
@@ -60,6 +63,11 @@ fun evalBlock(pEnv: Env, block: PrettyElement.Block): Value.JsonBlock {
 
 fun evalField(env: Env, field: PrettyElement.Field): Value =
      eval(env, field.value)
+
+fun evalArray(env: Env, array: PrettyElement.Array): Value {
+    val elements = array.values.map { evalElement(env, it) }
+    return Value.Array(elements)
+}
 
 fun eval(env: Env, expr: Expr): Value {
     return when (expr) {

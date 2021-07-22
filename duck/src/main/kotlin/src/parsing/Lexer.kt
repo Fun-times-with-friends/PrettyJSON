@@ -23,7 +23,9 @@ class Lexer(input: String) {
             ')' -> Token.RPAREN
             '{' -> Token.CURLLEFT
             '}' -> Token.CURLRIGHT
-            ';' -> Token.DELIMITER
+            '[' -> Token.BRACKLEFT
+            ']' -> Token.BRACKRIGHT
+            ',' -> Token.Comma
             '+' -> Token.PLUS
             '-' -> Token.MINUS
             '*' -> Token.MUL

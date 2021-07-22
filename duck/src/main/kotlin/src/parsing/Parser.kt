@@ -25,10 +25,15 @@ class Parser(val tokens: ArrayList<Token>) {
         }
     }
 
-    fun parseField(): PrettyElement {
-        if (peek() == Token.CURLLEFT) return parseBlock()
-        val result = parseExpr()
-        return PrettyElement.Field(result)
+    fun parseElement(): PrettyElement {
+        when (peek()) {
+            Token.CURLLEFT -> return parseBlock()
+            Token.BRACKLEFT -> return parseArray()
+            else -> {
+                val result = parseExpr()
+                return PrettyElement.Field(result)
+            }
+        }
     }
 
     fun parseBlock(): PrettyElement.Block {
@@ -42,7 +47,7 @@ class Parser(val tokens: ArrayList<Token>) {
                     for (pair in result){
                         if (pair.first == i) throw Exception("$i is already defined")
                     }
-                    val value = parseField()
+                    val value = parseElement()
                     if (value is PrettyElement.Field && value.value is Expr.Lambda)
                         throw Exception("Fields shouldn't just consist of lambdas like this: \n$result")
                     result.add(i to value)
@@ -51,7 +56,7 @@ class Parser(val tokens: ArrayList<Token>) {
                     expectNext<Token.LET>("let")
                     val binder = expectNext<Token.IDENT>("binder").ident
                     expectNext<Token.EQUALS>("equals")
-                    val value = parseField()
+                    val value = parseElement()
                     bindings.add(binder to value)
                 }
                 else -> throw Exception("Expected let or Identifier, got ${peek()}")
@@ -60,6 +65,18 @@ class Parser(val tokens: ArrayList<Token>) {
 
         expectNext<Token.CURLRIGHT>("}")
         return PrettyElement.Block(bindings, result)
+    }
+
+    fun parseArray(): PrettyElement {
+        val a = mutableListOf<PrettyElement>()
+        expectNext<Token.BRACKLEFT>("Expected [")
+        while (true){
+            a.add(parseElement())
+            if (peek() == Token.Comma){ next() }
+            if (peek() == Token.BRACKRIGHT) { break }
+        }
+        expectNext<Token.BRACKRIGHT>("Expected ]")
+        return PrettyElement.Array(a.toList())
     }
 
     fun parsePrettyLet(): PrettyElement {
