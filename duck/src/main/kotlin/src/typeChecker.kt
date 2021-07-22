@@ -198,12 +198,6 @@ fun infer(ctx: Context, expr: Expr): Monotype {
             unify(infer(ctx, expr.elseBranch), tyReturn)
             tyReturn
         }
-        is Expr.Let -> {
-            val tyExpr = infer(ctx, expr.expr)
-            val tmpCtx = ctx.put(expr.binder, generalize(ctx, tyExpr))
-            val tyBody = infer(tmpCtx, expr.body)
-            tyBody
-        }
     }
 }
 

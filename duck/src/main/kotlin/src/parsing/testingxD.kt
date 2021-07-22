@@ -27,26 +27,8 @@ fun testBlock(input: String) {
     val parsedBlock = parser.parseBlock()
     val evaledBlock = evalBlock(persistentHashMapOf(),parsedBlock )
     println(evaledBlock)
-
-
 }
 
-fun testExistingBlock(){
-    val b = PrettyElement.Block(
-        listOf(
-            "a" to PrettyElement.Field( Expr.Number(5)),
-        ),
-        hashMapOf(
-            "foo" to PrettyElement.Block(
-                listOf(),
-                hashMapOf("bar" to PrettyElement.Field(Expr.Var("a")))
-            ),
-        )
-    )
-    val result = evalBlock(persistentHashMapOf(), b)
-    println(result)
-
-}
 
 // todo LEXER, check for fieldname
 //
@@ -68,14 +50,12 @@ fun main(){
     // todo check lamda in evaluator?
     val funTest = """
         {  
-        # This is a comment
-        #* mutliline???
-        yeet *#
+            let value = 5
             let fib = \n => 
                 if n == 0 then 1 
                 else if n == 1 then 1 
                 else fib (n - 1) + fib (n - 2) 
-            lol: (fib) 5
+            lol: (fib) value
         }
     """.trimIndent()
     // testBlock(simpleTest)

@@ -32,6 +32,8 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
 
 ### Backlog, everything here is optional
 
+- [ ] Arrays
+
 - [ ] Building Block Functions
   ```kt
   fun a(foo: string) = 

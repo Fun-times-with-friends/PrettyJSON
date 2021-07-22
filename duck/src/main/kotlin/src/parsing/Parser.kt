@@ -32,26 +32,29 @@ class Parser(val tokens: ArrayList<Token>) {
     }
 
     fun parseBlock(): PrettyElement.Block {
-        val result = hashMapOf<String, PrettyElement>()
+        val result: MutableList<Pair<String, PrettyElement>> = mutableListOf()
         val bindings = mutableListOf<Pair<String, PrettyElement>>()
         expectNext<Token.CURLLEFT>("{")
         while (peek() != Token.CURLRIGHT) {
             when (peek()) {
                 is Token.FIELDIDENT -> {
                     val i = expectNext<Token.FIELDIDENT>("Field Identifier").ident
+                    for (pair in result){
+                        if (pair.first == i) throw Exception("$i is already defined")
+                    }
                     val value = parseField()
                     if (value is PrettyElement.Field && value.value is Expr.Lambda)
                         throw Exception("Fields shouldn't just consist of lambdas like this: \n$result")
-                    result.put(i, value)
+                    result.add(i to value)
                 }
                 is Token.LET -> {
                     expectNext<Token.LET>("let")
                     val binder = expectNext<Token.IDENT>("binder").ident
                     expectNext<Token.EQUALS>("equals")
                     val value = parseField()
-                    bindings.add(Pair(binder, value))
+                    bindings.add(binder to value)
                 }
-                else -> throw Exception("Expected let or Identifier")
+                else -> throw Exception("Expected let or Identifier, got ${peek()}")
             }
         }
 
@@ -135,20 +138,10 @@ class Parser(val tokens: ArrayList<Token>) {
             is Token.IF -> parseIf()
             is Token.BACKSLASH -> parseLambda()
             is Token.LPAREN -> parseParenthesized()
-            is Token.LET -> parseLet()
             else -> null
         }
     }
 
-    private fun parseLet(): Expr {
-        expectNext<Token.LET>("let")
-        val binder = expectNext<Token.IDENT>("binder").ident
-        expectNext<Token.EQUALS>("equals")
-        val expr = parseExpr()
-        expectNext<Token.IN>("in")
-        val body = parseExpr()
-        return Expr.Let(binder, expr, body)
-    }
 
     private fun parseBoolean(): Expr {
         val t = expectNext<Token.BOOLEAN_LIT>("boolean literal")

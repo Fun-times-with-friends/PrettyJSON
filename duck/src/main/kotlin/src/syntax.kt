@@ -7,7 +7,7 @@ sealed class PrettyElement{
     data class Field(val value: Expr): PrettyElement()
     data class Block(
         val bindings: List<Pair<String, PrettyElement>>,
-        val properties: HashMap<String, PrettyElement>
+        val properties: List<Pair<String, PrettyElement>>
     ) : PrettyElement()
 }
 
@@ -20,7 +20,6 @@ sealed class Expr {
     data class Boolean(val b: kotlin.Boolean) : Expr()
     data class Binary(val operator: Operator, val x: Expr, val y: Expr) : Expr()
     data class If(val condition: Expr, val thenBranch: Expr, val elseBranch: Expr) : Expr()
-    data class Let(val binder: String, val expr: Expr, val body: Expr) : Expr()
 }
 
 enum class Operator {

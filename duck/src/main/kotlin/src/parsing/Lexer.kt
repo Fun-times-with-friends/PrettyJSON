@@ -79,7 +79,6 @@ class Lexer(input: String) {
         if (iter.peek() == ':') {
             iter.next()
             return Token.FIELDIDENT(result)
-
         }
 
         return when (result) {

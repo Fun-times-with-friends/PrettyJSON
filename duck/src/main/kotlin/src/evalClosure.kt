@@ -8,7 +8,7 @@ import src.parsing.Parser
 typealias Env = PersistentMap<String, Value>
 
 sealed class Value {
-    data class JsonBlock(val properties: HashMap<String, Value>): Value(){
+    data class JsonBlock(val properties: ArrayList<Pair<String, Value>> = arrayListOf()): Value(){
         override fun toString(): String {
             var s = "{ "
             var setColon = false
@@ -16,7 +16,7 @@ sealed class Value {
                 // { "foo": 5, "bar": 6 }
                 if (setColon) s += ", "
                 else setColon = true
-                s += "\"${p.key}\": ${p.value}"
+                s += "\"${p.first}\": ${p.second}"
             }
             s += " }"
             return s
@@ -47,13 +47,13 @@ fun evalElement(env: Env, element: PrettyElement): Value{
 
 fun evalBlock(pEnv: Env, block: PrettyElement.Block): Value.JsonBlock {
     var env = pEnv
-    val b = Value.JsonBlock(hashMapOf())
+    val b = Value.JsonBlock(arrayListOf())
     for (p in block.bindings) {
         env = env.put(p.first, evalElement(env, p.second))
     }
 
     for (p in block.properties) {
-        b.properties.put(p.key, evalElement(env, p.value))
+        b.properties.add(p.first to evalElement(env, p.second))
     }
     return b
 }
@@ -68,11 +68,6 @@ fun eval(env: Env, expr: Expr): Value {
         is Expr.Boolean -> Value.Boolean(expr.b)
         is Expr.Var -> env[expr.name] ?: throw Exception("${expr.name} is not defined.")
         is Expr.Lambda -> Value.Closure(env, expr.binder, expr.body)
-        is Expr.Let -> {
-            val evaledExpr = eval(env, expr.expr)
-            val nestedEnv = env.put(expr.binder, evaledExpr)
-            eval(nestedEnv, expr.body)
-        }
         is Expr.Application -> {
             val evaledFunc = eval(env, expr.func)
             val evaledArg = eval(env, expr.arg)
