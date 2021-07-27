@@ -53,17 +53,30 @@ fun evalElement(env: Env, element: PrettyElement): Value{
     }
 }
 
-fun evalBlock(pEnv: Env, block: PrettyElement.Block): Value.JsonBlock {
-    var env = pEnv
-    val b = Value.JsonBlock(arrayListOf())
-    for (p in block.bindings) {
-        env = env.put(p.first, evalElement(env, p.second))
-    }
 
-    for (p in block.properties) {
-        b.properties.add(p.first to evalElement(env, p.second))
+fun evalBlock(pEnv: Env, block: PrettyElement.Block): Value {
+    val r = eval(pEnv, block.repeat) as? Value.Number ?: throw Exception("repeat is not a number")
+    if (r.n > 1){
+        val a = mutableListOf<Value>()
+        for(i in 0..r.n){
+            var env = pEnv
+            env = env.put("repeat", Value.Number(i))
+            block.repeat = Expr.Number(1)
+            a.add(evalBlock(env, block))
+        }
+        return Value.Array(a.toList())
+    }else{
+        var env = pEnv
+        val b = Value.JsonBlock(arrayListOf())
+        for (p in block.bindings) {
+            env = env.put(p.first, evalElement(env, p.second))
+        }
+
+        for (p in block.properties) {
+            b.properties.add(p.first to evalElement(env, p.second))
+        }
+        return b
     }
-    return b
 }
 
 fun evalField(env: Env, field: PrettyElement.Field): Value =

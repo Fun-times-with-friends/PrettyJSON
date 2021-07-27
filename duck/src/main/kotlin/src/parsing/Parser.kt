@@ -62,8 +62,17 @@ class Parser(val tokens: ArrayList<Token>) {
                 else -> throw Exception("Expected let, Identifier or `}`, got ${peek()}")
             }
         }
+        val r = result.find { it.first.toLowerCase() == "repeat" }
+        val repeat: Expr
+        if (r != null && r.second is PrettyElement.Field){
+            repeat = (r.second as PrettyElement.Field).value
+            result.remove(r)
+        }else{
+            repeat = Expr.Number(1)
+        }
+
         expectNext<Token.CURLRIGHT>("}")
-        return PrettyElement.Block(bindings, result)
+        return PrettyElement.Block(bindings, result, repeat)
     }
 
     fun parseArray(): PrettyElement {

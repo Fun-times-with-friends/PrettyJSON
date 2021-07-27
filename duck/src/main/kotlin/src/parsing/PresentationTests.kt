@@ -10,6 +10,7 @@ fun main() {
     lamdaTest()
     alreadyDefined()
     localVariable()
+    repeatTest()
 }
 
 fun simpleBlock() {
@@ -104,6 +105,17 @@ fun lamdaTest() {
         else fib (n - 1) + fib (n - 2) 
         
     prob1: (fib) value
+}
+    """.trimIndent()
+    )
+}
+
+fun repeatTest() {
+    testBlock(
+        """
+{  
+    prob1: { a: 5 }
+    prob2: { repeat: 5 a: 5*repeat }
 }
     """.trimIndent()
     )

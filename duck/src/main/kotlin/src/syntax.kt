@@ -8,7 +8,8 @@ sealed class PrettyElement{
     data class Array(val values: List<PrettyElement>): PrettyElement()
     data class Block(
         val bindings: List<Pair<String, PrettyElement>>,
-        val properties: List<Pair<String, PrettyElement>>
+        val properties: List<Pair<String, PrettyElement>>,
+        var repeat: Expr
     ) : PrettyElement()
 }
 

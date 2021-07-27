@@ -217,7 +217,7 @@ fun testInfer(expr: String, ctx: Context = emptyContext) {
 
 fun main() {
     testInfer("1")
-    testInfer("true")
+    // testInfer("true")
     testInfer("\\x => true")
     testInfer("x")
     testInfer("\\x => x")
