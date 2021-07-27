@@ -78,6 +78,7 @@ class Lexer(input: String) {
         while (iter.hasNext() && iter.peek().isJavaIdentifierPart()) {
             result += iter.next()
         }
+        consumeWhitespace()
         if (iter.peek() == ':') {
             iter.next()
             return Token.FIELDIDENT(result)

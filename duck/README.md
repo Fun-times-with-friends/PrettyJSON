@@ -7,7 +7,7 @@ Das hier wird unser Projekt für PuC im Sommerstemester 2021. Wir wissen noch ni
 Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbeit damit für uns angenehmer zu gestalten.
 
 - [x] Mathe innerhalb von JSON
-- [ ] Let Bindings
+- [x] Let Bindings
   ```
   let x = {
       foo: "bar"
@@ -27,12 +27,12 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
   }
   ```
 
-- [ ] Kommentare
-- [x] Newlines (eventuell als Seperator)
+- [x] Kommentare
+- [x] Newlines (~~eventuell als Seperator~~)
 
 ### Backlog, everything here is optional
 
-- [ ] Arrays
+- [x] Arrays
 
 - [ ] Building Block Functions
   ```kt

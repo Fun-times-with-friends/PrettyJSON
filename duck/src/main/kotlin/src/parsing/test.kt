@@ -30,24 +30,19 @@ fun testBlock(input: String) {
 }
 
 
-// todo LEXER, check for fieldname
 //
 fun main(){
     val simpleTest = """
          {  
-            foo: {
-                thisShouldWork: (\x => x + 2) 10
-                thisShouldNotWork: let a = 10 in
-                                   let a = 9 in
-                                   if a == 10 then 10 else 0
-                x: let a = "AAAHHHHHHHHHH" in a
-            } 
+            block: {
+                let x = "inner variable"
+                inner : x
+            }
+            outer: "y"
          }""".trimIndent()
 
 
     // let bindings
-    // todo our letbindings bites with the normal lets
-    // todo check lamda in evaluator?
     val funTest = """
         {  
             let value = 5
@@ -60,7 +55,7 @@ fun main(){
     """.trimIndent()
     // testBlock(simpleTest)
     // testExistingBlock()
-    testBlock(funTest)
+    testBlock(simpleTest)
     /*
     let a = { foo: "bar" }
     let a = 10 | "bar" | true

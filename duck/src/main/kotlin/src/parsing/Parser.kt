@@ -59,10 +59,9 @@ class Parser(val tokens: ArrayList<Token>) {
                     val value = parseElement()
                     bindings.add(binder to value)
                 }
-                else -> throw Exception("Expected let or Identifier, got ${peek()}")
+                else -> throw Exception("Expected let, Identifier or `}`, got ${peek()}")
             }
         }
-
         expectNext<Token.CURLRIGHT>("}")
         return PrettyElement.Block(bindings, result)
     }
@@ -105,16 +104,6 @@ class Parser(val tokens: ArrayList<Token>) {
 
         return lhs
     }
-
-    /*
-    {
-        yada: "yada"
-        asd :{
-            abc : (\x => x) 10
-            yeet : "abc"
-        }
-    }
-     */
 
     private fun parseOperator(): Operator? {
         return when (peek()) {

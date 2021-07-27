@@ -6,7 +6,7 @@ import src.parsing.Lexer
 import src.parsing.Parser
 import src.parsing.Token
 
-fun main(){
+fun main() {
     simpleBlock()
     array()
     letBindings()
@@ -14,8 +14,9 @@ fun main(){
     myTest()
 }
 
-fun simpleBlock(){
-    testBlock("""
+fun simpleBlock() {
+    testBlock(
+        """
 {
     prop1: "red"
     prop2: 10 + 10
@@ -23,11 +24,13 @@ fun simpleBlock(){
         foo: "bar" 
     }
 }
-    """.trimIndent())
+    """.trimIndent()
+    )
 }
 
 fun array() {
-    testBlock("""
+    testBlock(
+        """
 {
     prob1: [
       { foo: 1 bar: 2 },
@@ -39,11 +42,13 @@ fun array() {
       [ 1,2,3 ],
     ]
 }
-    """.trimIndent())
+    """.trimIndent()
+    )
 }
 
-fun letBindings(){
-    testBlock("""
+fun letBindings() {
+    testBlock(
+        """
 {
     let color = "red"
     let block = {
@@ -55,38 +60,39 @@ fun letBindings(){
     prop2: block
     
 }
-    """.trimIndent())
+    """.trimIndent()
+    )
 }
 
-fun myTest(){
-    testInvalid("""
+fun myTest() {
+    testInvalid(
+        """
 {
-    prop2: block
-    prop1: color
-    
-    let color = "red"
-    let block = {
-        prop1: "Im a string in a block"
-        prop1: "Im not a string in a block Kappa"
-        prop2: color
-        let x = 20
-        prop3: x + 10
-    }
+    prop1: "Im a string in a block"
+    prop1: "I should already be defined"
+}
+    """.trimIndent())
+    testInvalid(
+                """
+{
+    prop1: { let a = "a" }
+    prob2: a
 }
     """.trimIndent())
 }
 
-fun testInvalid(str: String){
-    try{
+fun testInvalid(str: String) {
+    try {
         testBlock(str)
-    }catch (e: Exception){
-        println("Failed Exception (this is a good thing:")
+    } catch (e: Exception) {
+        println("Failed Exception (this is a good thing):")
         println(e.message)
     }
 }
 
-fun lamdaTest(){
-    testBlock("""
+fun lamdaTest() {
+    testBlock(
+        """
 {  
     let value = 5
     let fib = \n => 
@@ -96,17 +102,20 @@ fun lamdaTest(){
         
     prob1: (fib) value
 }
-    """.trimIndent())
+    """.trimIndent()
+    )
 }
 
 
 fun testBlock(input: String) {
     println("\n===============================================")
+    println("PrettyJSON:")
     println(input)
     println("-----------------------------------------------")
     val lexer = Lexer(input)
     val parser = Parser(lexer.lexTokens())
     val parsedBlock = parser.parseBlock()
-    val evaledBlock = evalBlock(persistentHashMapOf(),parsedBlock )
+    val evaledBlock = evalBlock(persistentHashMapOf(), parsedBlock)
+        println("JSON")
     println(evaledBlock)
 }
