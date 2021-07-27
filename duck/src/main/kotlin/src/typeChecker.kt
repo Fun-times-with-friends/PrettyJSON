@@ -10,6 +10,7 @@ import src.parsing.Parser
 sealed class Monotype {
     object Number : Monotype()
     object Str : Monotype()
+    object PrettyDouble: Monotype()
     object Bool : Monotype()
     data class Fun(val arg: Monotype, val res: Monotype) : Monotype() {
         override fun toString(): String = "($arg -> $res)"
@@ -31,12 +32,13 @@ sealed class Monotype {
             is Unknown -> "u$u"
             is Var -> "$name"
             is Str -> "String"
+            is PrettyDouble -> "Double"
         }
     }
 
     fun unknowns(): PersistentSet<Int> {
         return when (this) {
-            Str, Bool, Number, is Var -> persistentSetOf()
+            Str, Bool, Number, PrettyDouble, is Var -> persistentSetOf()
             is Fun -> this.arg.unknowns().addAll(this.res.unknowns())
             is Unknown -> persistentSetOf(this.u)
         }
@@ -44,7 +46,7 @@ sealed class Monotype {
 
     fun substitute(v: String, replacement: Monotype): Monotype {
         return when (this) {
-            Str, Bool, Number, is Unknown -> this
+            Str, Bool, PrettyDouble, Number, is Unknown -> this
             is Fun -> Fun(arg.substitute(v, replacement), res.substitute(v, replacement))
             is Var -> if (name == v) {
                 replacement
@@ -110,7 +112,7 @@ var solution: Solution = HashMap()
 
 fun applySolution(ty: Monotype, solution: Solution): Monotype {
     return when (ty) {
-       Monotype.Str, Monotype.Bool, Monotype.Number, is Monotype.Var -> ty
+       Monotype.Str, Monotype.Bool, Monotype.PrettyDouble, Monotype.Number, is Monotype.Var -> ty
         is Monotype.Fun -> Monotype.Fun(applySolution(ty.arg, solution), applySolution(ty.res, solution))
         is Monotype.Unknown ->
             solution[ty.u]?.let { applySolution(it, solution) } ?: ty
@@ -150,6 +152,7 @@ fun infer(ctx: Context, expr: Expr): Monotype {
     return when (expr) {
         is Expr.Boolean -> Monotype.Bool
         is Expr.Number -> Monotype.Number
+        is Expr.PrettyDouble -> Monotype.PrettyDouble
         is Expr.Str -> Monotype.Str
         is Expr.Lambda -> {
             val tyArg = freshUnknown()

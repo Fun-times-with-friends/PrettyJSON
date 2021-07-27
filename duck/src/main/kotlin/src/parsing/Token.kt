@@ -47,6 +47,7 @@ sealed class Token {
     object PLUS : Token()
     object MINUS : Token()
     object MUL : Token()
+    object DIV : Token()
     object DOUBLE_EQUALS : Token()
 
     data class IDENT(val ident: String) : Token()
@@ -56,6 +57,7 @@ sealed class Token {
     data class BOOLEAN_LIT(val b: Boolean) : Token()
     data class NUMBER_LIT(val n: Int) : Token()
     data class Str(val s: String) : Token()
+    data class DOUBLE_LIT (val d: Double) : Token()
 
     // Control Token
     object EOF : Token()

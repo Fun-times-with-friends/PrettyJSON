@@ -2,22 +2,22 @@ package src.parsing
 
 import kotlinx.collections.immutable.persistentHashMapOf
 import src.evalBlock
-import src.parsing.Lexer
-import src.parsing.Parser
-import src.parsing.Token
 
 fun main() {
     simpleBlock()
     array()
     letBindings()
     lamdaTest()
-    myTest()
+    alreadyDefined()
+    localVariable()
 }
 
 fun simpleBlock() {
     testBlock(
         """
 {
+    #* This is a very simple
+    block *#
     prop1: "red"
     prop2: 10 + 10
     prop3: { 
@@ -64,7 +64,7 @@ fun letBindings() {
     )
 }
 
-fun myTest() {
+fun alreadyDefined() {
     testInvalid(
         """
 {
@@ -72,8 +72,11 @@ fun myTest() {
     prop1: "I should already be defined"
 }
     """.trimIndent())
+}
+
+fun localVariable(){
     testInvalid(
-                """
+        """
 {
     prop1: { let a = "a" }
     prob2: a
@@ -116,6 +119,6 @@ fun testBlock(input: String) {
     val parser = Parser(lexer.lexTokens())
     val parsedBlock = parser.parseBlock()
     val evaledBlock = evalBlock(persistentHashMapOf(), parsedBlock)
-        println("JSON")
+    println("JSON")
     println(evaledBlock)
 }

@@ -37,6 +37,11 @@ sealed class Value {
     data class Boolean(val b: kotlin.Boolean) : Value(){
         override fun toString(): String = b.toString()
     }
+
+    data class PrettyDouble(val d: Double) : Value(){
+        override fun toString(): String = d.toString()
+    }
+
 }
 
 fun evalElement(env: Env, element: PrettyElement): Value{
@@ -73,6 +78,7 @@ fun eval(env: Env, expr: Expr): Value {
     return when (expr) {
         is Expr.Str -> Value.Str(expr.s)
         is Expr.Number -> Value.Number(expr.n)
+        is Expr.PrettyDouble -> Value.PrettyDouble(expr.d)
         is Expr.Boolean -> Value.Boolean(expr.b)
         is Expr.Var -> env[expr.name] ?: throw Exception("${expr.name} is not defined.")
         is Expr.Lambda -> Value.Closure(env, expr.binder, expr.body)

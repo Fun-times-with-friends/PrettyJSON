@@ -70,6 +70,15 @@ class Lexer(input: String) {
         while (iter.hasNext() && iter.peek().isDigit()) {
             result += iter.next()
         }
+        if (iter.peek() == '.'){
+            iter.next()
+            if (!iter.peek().isDigit()) throw Exception("Expected Decimal part but found :${peek()}")
+            result+="."
+            while (iter.hasNext() && iter.peek().isDigit()) {
+                result += iter.next()
+            }
+            return Token.DOUBLE_LIT(result.toDouble())
+        }
         return Token.NUMBER_LIT(result.toInt())
     }
 
@@ -107,8 +116,8 @@ class Lexer(input: String) {
 
     private fun consumeComment() {
         var res = ""
-        val c = iter.peek()
-        if (c == '#') {
+        val char = iter.peek()
+        if (char == '#') {
             iter.next()
             if (iter.peek() == '*') {
                 var end = false
@@ -126,9 +135,9 @@ class Lexer(input: String) {
                 } while (iter.hasNext() && !end)
             } else {
                 while (iter.hasNext()) {
-                    val charHerexD = iter.peek()
-                    if (charHerexD == '\n') break
-                    res += charHerexD
+                    val alsoAChar = iter.peek()
+                    if (alsoAChar == '\n') break
+                    res += alsoAChar
                     iter.next()
                 }
             }

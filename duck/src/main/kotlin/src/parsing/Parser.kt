@@ -144,8 +144,14 @@ class Parser(val tokens: ArrayList<Token>) {
             is Token.IF -> parseIf()
             is Token.BACKSLASH -> parseLambda()
             is Token.LPAREN -> parseParenthesized()
+            is Token.DOUBLE_LIT -> parseDouble()
             else -> null
         }
+    }
+
+    private fun parseDouble(): Expr {
+        val t = expectNext<Token.DOUBLE_LIT>("double literal")
+        return Expr.PrettyDouble(t.d)
     }
 
 
