@@ -12,7 +12,7 @@ class Lexer(input: String) {
         return tokens
     }
 
-    public fun next(): Token {
+    fun next(): Token {
         lookahead?.let { lookahead = null; return it }
         consumeWhitespace()
         if (!iter.hasNext()) {
@@ -50,7 +50,7 @@ class Lexer(input: String) {
         }
     }
 
-    public fun peek(): Token {
+    fun peek(): Token {
         val token = next()
         lookahead = token
         return token

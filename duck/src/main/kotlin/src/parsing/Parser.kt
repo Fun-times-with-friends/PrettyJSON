@@ -19,7 +19,7 @@ class Parser(val tokens: ArrayList<Token>) {
     }
 
     fun parse(): PrettyElement.Block {
-        when (val t = next()) {
+        when (val t = peek()) {
             is Token.CURLLEFT -> return parseBlock()
             else -> throw Exception("Unexpected token: $t")
         }

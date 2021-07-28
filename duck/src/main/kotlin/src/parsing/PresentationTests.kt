@@ -117,7 +117,7 @@ fun testBlock(input: String) {
     println("-----------------------------------------------")
     val lexer = Lexer(input)
     val parser = Parser(lexer.lexTokens())
-    val parsedBlock = parser.parseBlock()
+    val parsedBlock = parser.parse()
     val evaledBlock = evalBlock(persistentHashMapOf(), parsedBlock)
     println("JSON")
     println(evaledBlock)
