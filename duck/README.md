@@ -5,6 +5,7 @@ Das hier wird unser Projekt für PuC im Sommerstemester 2021. Wir wissen noch ni
 ## Ziele
 
 Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbeit damit für uns angenehmer zu gestalten.
+Test sind [hier zu finden](https://github.com/Fun-times-with-friends/PrettyJSON/blob/main/duck/src/main/kotlin/src/parsing/PresentationTests.kt)
 
 - [x] Mathe innerhalb von JSON
 - [x] Let Bindings
@@ -68,17 +69,6 @@ Die Sprache zielt darauf ab, JSON um ein paar features zu erweitern und die Arbe
 | ------------------------------ | ------------------------------------------------------------ |
 | Keine leeren Lambas in Feldern | Parser angepasst, erkennt jetzt bei parseField ob es ein Lambda ist. |
 | Erkennen, wann ein neues feld beginnt | Schon im Lexer auf ident + doublecolon pruefen        |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
-|                                |                                                              |
 |                                |                                                              |
 |                                |                                                              |
 
